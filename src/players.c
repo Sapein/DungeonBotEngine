@@ -20,20 +20,9 @@
 enum DungeonEngine_PlayerClass {WARRIOR};
 enum DungeonEngine_PlayerRace {HUMAN};
 
-struct DungeonEngine_Player{
+struct DungeonEngine_Player {
 };
-struct DungeonEngine_PlayerInfo {
-    int character_id;
-    enum DungeonEngine_PlayerClass;
-    enum DungeonEngine_PlayerRace;
-    int char_level;
-    int char_name_len;
-    void *current_room;
-    void *current_dungeon;
-    void *inventory;
-    char character_name[];
-};
-typedef *DungeonEngine_Player ptr_PlayerToken
+typedef struct *DungeonEngine_Player ptr_PlayerToken
 
 bool DungeonEngine_PlayerLogin(int character_id, long int password, ptr_PlayerToken);
 bool DungeonEngine_PlayerRegister(struct DungeonEngine_PlayerInfo, long int password);

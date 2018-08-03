@@ -34,7 +34,7 @@ struct DungeonEngine_PlayerInfo {
     void *inventory;
     char character_name[];
 };
-typedef *DungeonEngine_Player ptr_PlayerToken
+typedef struct *DungeonEngine_Player ptr_PlayerToken
 
 bool DungeonEngine_PlayerLogin(int character_id, long int password, ptr_PlayerToken);
 bool DungeonEngine_PlayerRegister(struct DungeonEngine_PlayerInfo, long int password);
