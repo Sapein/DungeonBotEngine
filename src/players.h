@@ -19,14 +19,17 @@
 #define SDEPLAYERS
 #include <stdbool.h>
 
-enum DungeonEngine_PlayerClass {WARRIOR};
-enum DungeonEngine_PlayerRace {HUMAN};
+enum DungeonEngine_CharClass {WARRIOR};
+enum DungeonEngine_CharRace {HUMAN};
+enum DungeonEngine_CharAttributes {STR, CON, WIS,
+                                   DEX, CHA, INT};
 
 struct DungeonEngine_Player;
 struct DungeonEngine_PlayerInfo {
     int character_id;
-    enum DungeonEngine_PlayerClass;
-    enum DungeonEngine_PlayerRace;
+    enum DungeonEngine_CharClass;
+    enum DungeonEngine_CharRace;
+    int char_attributes[6];
     int char_level;
     int char_name_len;
     void *current_room;
@@ -36,7 +39,9 @@ struct DungeonEngine_PlayerInfo {
 };
 typedef struct *DungeonEngine_Player ptr_PlayerToken
 
-bool DungeonEngine_PlayerLogin(int character_id, long int password, ptr_PlayerToken);
-bool DungeonEngine_PlayerRegister(struct DungeonEngine_PlayerInfo, long int password);
-struct DungeonEngine_PlayerInfo DungeonEngine_GetPlayer(ptr_PlayerToken);
+int DungeonEngine_PlayerInit(void);
+bool DungeonEngine_PlayerLogin(int character_id, long int password, *ptr_PlayerToken Token);
+bool DungeonEngine_PlayerRegister(struct DungeonEngine_PlayerInfo, long int password, *ptr_PlayerToken Token);
+struct DungeonEngine_PlayerInfo DungeonEngine_PlayerGet(ptr_PlayerToken);
+ptr_PlayerToken DungeonEngine_GetPlayer(int character_id);
 #endif
