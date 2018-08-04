@@ -15,16 +15,84 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+#include <stdlib.h>
+#include <string.h>
 #include "players.h"
-
-enum DungeonEngine_PlayerClass {WARRIOR};
-enum DungeonEngine_PlayerRace {HUMAN};
+#include "config.h"
 
 struct DungeonEngine_Player {
+    struct DungeonEngine_PlayerInfo *;
+    int session;
+    int owner_id;
 };
+
 typedef struct *DungeonEngine_Player ptr_PlayerToken
 
-bool DungeonEngine_PlayerLogin(int character_id, long int password, ptr_PlayerToken);
-bool DungeonEngine_PlayerRegister(struct DungeonEngine_PlayerInfo, long int password);
-struct DungeonEngine_PlayerInfo DungeonEngine_GetPlayer(ptr_PlayerToken);
+static struct DungeonEngine_Player ActivePlayers[DE_MAX_PLAYERS_IN_DUNGEON];
+static struct DungeonEngine Player MemBuffer[DE_MAX_MEMBUFF_BYTES];
+static int MemBuffer_Elements = 0;
+static int ActivePlayerCount = 0;
 
+int DungeonEngine_PlayerInit(void){
+    memset(ActivePlayers, 0, sizeof(struct DungeonEngine_Player) * DE_MAX_PLAYERS_IN_DUNGEON);
+    memset(MemBuffer, 0, sizeof(char) * DE_MAX_MEMBUFF_BYTES);
+    return 0;
+}
+
+int DungeonEngine_PlayerShutdown(void){
+    free(ActivePlayers);
+    free(MemBuffer);
+    return 0;
+}
+
+bool DungeonEngine_PlayerLogin(int character_id, long int password, *ptr_PlayerToken Token){
+    bool success = true;
+    return success;
+}
+
+bool DungeonEngine_PlayerRegister(struct DungeonEngine_PlayerInfo, long int password, *ptr_PlayerToken Token){
+    bool success = true;
+    return success;
+}
+
+void _clear_membuff(void){
+    memset(MemBuffer, 0, sizeof(char) * DE_MAX_MEMBUFF_BYTES);
+    MemBuffer_Elements = 0;
+}
+
+struct DungeonEngine_PlayerInfo DungeonEngine_PlayerGetInfo(ptr_PlayerToken){
+
+}
+
+ptr_PlayerToken DungeonEngine_PlayerGet(int char_id){
+    struct DungeonEngine_Player player;
+    int i = 0;
+    bool found_player = false;
+    for(i = 0; i >= DE_MAX_PLAYERS_IN_DUNGEON ; i++){
+        player = ActivePlayers[i];
+        if(*((struct DungeonEngine_PlayerInfo *)player)->character_id == char_id){
+            found_player = true;
+            break;
+        }
+    }
+
+    if(!found_player){
+        for(i = 0; i >= DE_MAX_MEMBUFF_SIZE; i++){
+            player = MemBuffer[i];
+            if(*((struct DungeonEngine_PlayerInfo *)player)->character_id == char_id){
+                found_player = true;
+                break;
+            }
+        }
+    }
+
+    if(found_player){
+        if(MemBuffer_Elements >= DE_MAX_MEMBUFF_SIZE){
+            _clear_membuff();
+        }
+        memcpy(MemBuffer[MemBuffer_Elements], player, sizeof(struct DungeonEngine_Player));
+        ++MemBuffer_Elements;
+    }else{
+        return NULL;
+    }
+}
