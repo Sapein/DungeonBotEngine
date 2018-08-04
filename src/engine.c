@@ -18,12 +18,17 @@
 #include <stdbool.h>
 #include <unistd.h>
 #include "engine.h"
+#include "players.h"
 
 static pid_t child_pid = 0;
 enum DungeonEngine_EnErrors DungeonEngine_Init(void){
     /* Right here is where world files and the like should be loaded,
      * along with connecting to/loading databases
      */
+    int code = SUCCESS;
+    if((code = DungeonEngine_PersonInit()) != SUCCESS){
+        return code;
+    }
     return SUCCESS;
 }
 
