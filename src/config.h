@@ -1,0 +1,7 @@
+#ifndef DECONFIG
+#define DECONFIG
+
+#define DE_MAX_PLAYERS_IN_DUNGEON 5
+#define DE_MAX_MEMBUFF_SIZE
+
+#endif
