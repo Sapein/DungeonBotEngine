@@ -18,6 +18,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "players.h"
+#include "quickhash.h"
 #include "config.h"
 
 struct DungeonEngine_Player {
@@ -61,7 +62,25 @@ void _clear_membuff(void){
 }
 
 struct DungeonEngine_PlayerInfo DungeonEngine_PlayerGetInfo(ptr_PlayerToken){
+    return *(struct DungeonEngine_PlayerInfo *)ptr_PlayerToken;
+}
 
+struct DungeonEngine_PlayerInfo DungeonEngine_PlayerCreate(enum DungeonEngine_CharClass char_class,
+                                                           enum DungeonEngine_CharRace char_race,
+                                                           int char_attributes[6], int char_level,
+                                                           int height, int weight,
+                                                           int char_name_len, char character_name[])
+    int character_id = generate_hash_djb2(character_name, char_name_len);
+    struct DungeonEngine_PlayerInfo New_Character = { .char_class = char_class,
+                                                      .character_id = character_id,
+                                                      .char_race = char_race,
+                                                      .char_attributes = char_attributes,
+                                                      .char_level = char_level,
+                                                      .height = height,
+                                                      .weight = weight,
+                                                      .char_name_len = char_name_len,
+                                                      .character_name = character_name };
+    return New_Character;
 }
 
 ptr_PlayerToken DungeonEngine_PlayerGet(int char_id){
