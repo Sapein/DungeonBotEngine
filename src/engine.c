@@ -21,36 +21,56 @@
 #include "players.h"
 
 static pid_t child_pid = 0;
-enum DungeonEngine_EnErrors DungeonEngine_Init(void){
+static _Bool turn_based = true;
+
+enum DungeonEngine_EnErrors DungeonEngine_Init(_Bool turn_based){
     /* Right here is where world files and the like should be loaded,
      * along with connecting to/loading databases
      */
     int code = SUCCESS;
+    turn_based = turn_based;
     if((code = DungeonEngine_PersonInit()) != SUCCESS){
         return code;
     }
     return SUCCESS;
 }
 
-enum DungeonEngine_EnErrors DungeonEngine_Start(void){
-    bool running = true;
-    while(running){
+enum DungeonEngine_EnErrors DungeonEngine_Turn(void){
+    if(turn_based){
+        return SUCCESS;
+    }else{
+        return NO_TURNS;
     }
-    return SUCCESS;
+}
+
+enum DungeonEngine_EnErrors DungeonEngine_Start(void){
+    if(!turn_based){
+        bool running = true;
+        while(running){
+            ;
+        }
+        return SUCCESS;
+    }else{
+        return TURN_ONLY;
+    }
 }
 
 enum DungeonEngine_EnErrors DungeonEngine_ForkStart(void){
-    pid_t fork_code = fork();
-    switch(fork_code){
-        case -1:
-            return FORK_FAIL;
-        case 0:
-            break;
-        default:
-            child_pid = fork_code;
-            goto end;
+    if(!turn_based){
+        pid_t fork_code = fork();
+        switch(fork_code){
+            case -1:
+                return FORK_FAIL;
+            case 0:
+                break;
+            default:
+                child_pid = fork_code;
+                goto end;
+        }
+    end:
+        return SUCCESS;
     }
-
-end:
-    return SUCCESS;
+    else{
+        return TURN_ONLY;
+    }
 }

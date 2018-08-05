@@ -17,15 +17,16 @@
  */
 #ifndef SDUNGEON_ENGINE
 #define SDUNGEON_ENGINE
+#include <stdbool.h>
 
-enum DungeonEngine_EnErrors {SUCCESS, FORK_FAIL};
+enum DungeonEngine_EnErrors {SUCCESS, FORK_FAIL, TURN_ONLY, NO_TURNS};
 /* DungeonEngine_Init
  *
  * Sets up any structures required for startup
  * Args: None
  * Returns: Integer (0 if successful, > 0 if error)
  */
-enum DungeonEngine_EnErrors DungeonEngine_Init(void);
+enum DungeonEngine_EnErrors DungeonEngine_Init(bool turn_based);
 
 /* DungeonEngine_Start
  *
