@@ -1,7 +1,7 @@
 #ifndef SDE_DB
 #define SDE_DB
 
-enum DungeonEngine_DBErr {SUCCESS};
+enum DungeonEngine_DBErr {SUCCESS, NOSQL, SQLITE_ERR};
 
 /* Important Functions */
 enum DungeonEngine_DBErr DungeonEngine_DBInit(void);
