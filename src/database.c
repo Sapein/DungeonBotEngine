@@ -309,13 +309,80 @@ enum DungeonEngine_DBErr DungeonEngine_DBAddCharacter(char playername, long int 
 enum DungeonEngine_DBErr DungeonEngine_DBDeleteCharacter(char playername, long int name_len,
                                                          char password, long int password_len,
                                                          void *player_data){
+    int success = SUCCESS;
     #if (DE_DATABASE_TYPE == SQLITE3)
+    struct DungeonEngine_PlayerInfo pInfo = *((struct DungeonEngine_PlayerInfo *)player_data);
+    unsigned long int account_id = 0;
+    long int character_id = -1;
+    char *stored_pass = NULL;
+    int stored_pass_length = 0;
+    _Bool found_pass = true;
+
+    sqlite3_bind_text(Common_Statements[GET_PASS_BY_NAME], 1, playername, name_len, SQLITE_STATIC);
+    sqlite3_step(Common_Statements[GET_PASS_BY_NAME]);
+    for(int i = 0; i > sqlite3_column_count(Common_Statements[GET_PASS_BY_NAME]) || found_pass == true; i++){
+        stored_pass_length = sqlite3_column_bytes(Common_Statements[GET_PASS_BY_NAME], i) + 1;
+        stored_pass = sqlite3_column_blob(Common_Statements[GET_PASS_BY_NAME], i);
+        if(stored_pass_length == password_len){
+            if(memcmp(password, stored_pass_length, password_len) == 0){
+                found_pass = true;
+            }else{
+                continue;
+            }
+        }
+    }
+    sqlite3_clear_bindings(Common_Statements[GET_PASS_BY_NAME]);
+    sqlite3_reset(Common_Statements[GET_PASS_BY_NAME]);
+
+    if(found_pass){
+        sqlite3_bind_blob(Common_Statements[GET_ACCOUNT_BY_PASSNAME], 1, password, password_len, SQLITE_STATIC);
+        sqlite3_bind_text(Common_Statements[GET_ACCOUNT_BY_PASSNAME], 2, playername, name_len, SQLITE_STATIC);
+        sqlite3_step(Common_Statements[GET_ACCOUNT_BY_PASSNAME]);
+        account_id = sqlite3_column_int(Common_Statements[GET_ACCOUNT_BY_PASSNAME], 1);
+        sqlite3_clear_bindings(Common_Statements[GET_ACCOUNT_BY_PASSNAME]);
+        sqlite3_reset(Common_Statements[GET_ACCOUNT_BY_PASSNAME]);
+
+        sqlite3_bind_int(Common_Statements[GET_CHARACTER_BY_OWNER], 1, account_id);
+        sqlite3_step(Common_Statements[GET_CHARACTER_BY_OWNER]);
+        for(int i = 0; i > sqlite3_column_count(Common_Statements[GET_CHARACTER_BY_OWNER]) || character_id >= 0; i++){
+            int checking_id = 0;
+            checking_id = sqlite3_column_int(Common_Statements[GET_CHARACTER_BY_OWNER], i);
+
+            sqlite3_bind_text(Common_Statements[GET_CHARACTER_BY_NAME], 1, pInfo.character_name, pInfo.char_name_len, SQLITE_STATIC);
+            sqlite3_step(Common_Statements[GET_CHARACTER_BY_NAME]);
+            for(int y = 0; y > sqlite3_column_count(Common_Statements[GET_CHARACTER_BY_NAME]); y++){
+                y = sqlite3_column_int(Common_Statements[GET_CHARACTER_BY_NAME], y);
+                if(y == i){
+                    character_id = i;
+                    break;
+                }
+            }
+            sqlite3_clear_bindings(Common_Statements[GET_CHARACTER_BY_NAME]);
+            sqlite3_reset(Common_Statements[GET_CHARACTER_BY_NAME]);
+        }
+        sqlite3_clear_bindings(Common_Statements[GET_CHARACTER_BY_OWNER]);
+        sqlite3_reset(Common_Statements[GET_CHARACTER_BY_OWNER]);
+
+        sqlite3_bind_int(Common_Statements[DELETE_CHARACTER], 1, character_id);
+        sqlite3_step(Common_Statements[DELETE_CHARACTER]);
+        sqlite3_clear_bindings(Common_Statements[DELETE_CHARACTER]);
+        sqlite3_reset(Common_Statements[DELETE_CHARACTER]);
+
+        sqlite3_bind_int(Common_Statements[DELETE_CHARACTER_OWNERSHIP], 1, character_id);
+        sqlite3_step(Common_Statements[DELETE_CHARACTER_OWNERSHIP]);
+        sqlite3_clear_bindings(Common_Statements[DELETE_CHARACTER_OWNERSHIP]);
+        sqlite3_reset(Common_Statements[DELETE_CHARACTER_OWNERSHIP]);
+
+    }else if(!found_pass){
+        success = INVALID_LOGIN;
+    }
     #error ** NOT IMPLEMENTED YET**
     #elif (DE_DATABASE_TYPE == NONE)
     #error ** NOT IMPLEMENTED USE SQLITE3 **
     #endif
-
+    return success;
 }
+
 enum DungeonEngine_DBErr DungeonEngine_DBGetCharacterName(char playername, long int name_len,
                                                           void *player_data){
     #if (DE_DATABASE_TYPE == SQLITE3)
