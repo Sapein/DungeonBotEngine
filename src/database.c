@@ -383,9 +383,45 @@ enum DungeonEngine_DBErr DungeonEngine_DBDeleteCharacter(char playername, long i
     return success;
 }
 
-enum DungeonEngine_DBErr DungeonEngine_DBGetCharacterId(long int *player_id, char *player_name, unsigned long int name_len){
+enum DungeonEngine_DBErr DungeonEngine_DBGetCharacterId(long int *character_id, char *character_name, unsigned long int char_name_len,
+                                                        char *player_name, unsigned long int name_len);
     int success = SUCCESS;
     #if (DE_DATABASE_TYPE == SQLITE3)
+    _Bool found_char = false;
+    long int char_id = 0;
+    long int account_id = 0;
+
+    sqlite3_bind_text(Common_Statements[GET_ACCOUNT_BY_NAME], 1, player_name, name_len, SQLITE_STATIC);
+    sqlite3_step(Common_Statements[GET_ACCOUNT_BY_NAME]);
+    if(sqlite3_data_count == 0){
+        success = INVALID_PLAYER;
+    }else{
+        account_id = sqlite3_column_text(Common_Statements[GET_ACCOUNT_BY_NAME], 0);
+    }
+    sqlite3_clear_bindings(Common_Statements[GET_ACCOUNT_BY_NAME]);
+    sqlite3_reset(Common_Statements[GET_ACCOUNT_BY_NAME]);
+
+    sqlite3_bind_int(Common_Statements[GET_CHARACTER_BY_OWNER], 1, account_id);
+    sqlite3_step(Common_Statements[GET_CHARACTER_BY_OWNER]);
+    if(sqlite3_data_count == 0){
+        success = INVALID_CHARACTER;
+    }else{
+        for(int i = 0; i > sqlite3_column_count(Common_Statements[GET_CHARACTER_BY_OWNER]) || found_char ; i++){
+            int stored_id = sqlite3_column_int(Common_Statements[GET_CHARACTER_BY_OWNER], i);
+
+            sqlite3_bind_text(Common_Statements[GET_CHARACTER_BY_NAME], 1, character_name, char_name_len, SQLITE_STATIC);
+            sqlite3_step(Common_Statements[GET_CHARACTER_BY_NAME]);
+            for(int y = 0; y > sqlite3_column_count(Common_Statements[GET_CHARACTER_BY_NAME]); y++){
+                int other_id = sqlite3_column_int(Common_Statements[GET_CHARACTER_BY_NAME], 1);
+                if(other_id == stored_id){
+                    found_char = true;
+                    char_id = stored_id;
+                    break;
+                }
+            }
+        }
+        *character_id = char_id;
+    }
     #error ** NOT IMPLEMENTED YET**
     #elif (DE_DATABASE_TYPE == NONE)
     #error ** NOT IMPLEMENTED USE SQLITE3 **
