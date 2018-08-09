@@ -383,21 +383,16 @@ enum DungeonEngine_DBErr DungeonEngine_DBDeleteCharacter(char playername, long i
     return success;
 }
 
-enum DungeonEngine_DBErr DungeonEngine_DBGetCharacterName(char playername, long int name_len,
-                                                          void *player_data){
+enum DungeonEngine_DBErr DungeonEngine_DBGetCharacterId(long int *player_id, char *player_name, unsigned long int name_len){
+    int success = SUCCESS;
     #if (DE_DATABASE_TYPE == SQLITE3)
     #error ** NOT IMPLEMENTED YET**
     #elif (DE_DATABASE_TYPE == NONE)
     #error ** NOT IMPLEMENTED USE SQLITE3 **
     #endif
+    return success;
 }
-enum DungeonEngine_DBErr DungeonEngine_DBGetCharacterId(long int character_id){
-    #if (DE_DATABASE_TYPE == SQLITE3)
-    #error ** NOT IMPLEMENTED YET**
-    #elif (DE_DATABASE_TYPE == NONE)
-    #error ** NOT IMPLEMENTED USE SQLITE3 **
-    #endif
-}
+
 enum DungeonEngine_DBErr DungeonEngine_DBUpdatePlayer(char charactername, long int name_len,
                                                       char password, long int password,
                                                       void *new_char_data){
