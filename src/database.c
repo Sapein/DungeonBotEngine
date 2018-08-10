@@ -432,12 +432,45 @@ enum DungeonEngine_DBErr DungeonEngine_DBGetCharacterId(long int *character_id, 
 enum DungeonEngine_DBErr DungeonEngine_DBUpdatePlayer(char playername, long int name_len,
                                                       char password, long int password,
                                                       void *new_char_data){
+    int success = SUCCESS;
     #if (DE_DATABASE_TYPE == SQLITE3)
-    sqlite3_bind_int(
-    #error ** NOT IMPLEMENTED YET**
+    struct DungeonEngine_PlayerInfo pInfo = *((struct DungeonEngine_PlayerInfo *)new_char_data)
+    char *stored_pass = NULL;
+    int stored_pass_length = 0;
+    _Bool found_pass = true;
+
+    sqlite3_bind_text(Common_Statements[GET_PASS_BY_NAME], 1, playername, name_len, SQLITE_STATIC);
+    sqlite3_step(Common_Statements[GET_PASS_BY_NAME]);
+    for(int i = 0; i > sqlite3_column_count(Common_Statements[GET_PASS_BY_NAME]) || found_pass == true; i++){
+        stored_pass_length = sqlite3_column_bytes(Common_Statements[GET_PASS_BY_NAME], i) + 1;
+        stored_pass = sqlite3_column_blob(Common_Statements[GET_PASS_BY_NAME], i);
+        if(stored_pass_length == password_len){
+            if(memcmp(password, stored_pass_length, password_len) == 0){
+                found_pass = true;
+            }else{
+                continue;
+            }
+        }
+    }
+    sqlite3_clear_bindings(Common_Statements[GET_PASS_BY_NAME]);
+    sqlite3_reset(Common_Statements[GET_PASS_BY_NAME]);
+
+    sqlite3_bind_text(Common_Statements[UPDATE_CHARACTER_NAME], 1, pInfo.character_name, pInfo.char_name_len, SQLITE_STATIC);
+    sqlite3_bind_int(Common_Statements[UPDATE_CHARACTER_NAME], 2, pInfo.character_id);
+    sqlite3_step(Common_Statements[UPDATE_CHARACTER_NAME]);
+    sqlite3_clear_bindings(Common_Statements[UPDATE_CHARACTER_NAME]);
+    sqlite3_reset(Common_Statements[UPDATE_CHARACTER_NAME]);
+
+    sqlite3_bind_blob(Common_Statements[UPDATE_CHARACTER_INFORMATION], 1, pInfo,
+                      sizeof(struct DungeonEngine_PlayerInfo) + (sizeof(char) * pInfo.char_name_len) , SQLITE_STATIC);
+    sqlite3_bind_int(Common_Statements[UPDATE_CHARACTER_INFORMATION], 2, pInfo.character_id);
+    sqlite3_step(Common_Statements[UPDATE_CHARACTER_INFORMATION]);
+    sqlite3_clear_bindings(Common_Statements[UPDATE_CHARACTER_INFORMATION]);
+    sqlite3_reset(Common_Statements[UPDATE_CHARACTER_INFORMATION]);
     #elif (DE_DATABASE_TYPE == NONE)
     #error ** NOT IMPLEMENTED USE SQLITE3 **
     #endif
+    return success;
 }
 
 
