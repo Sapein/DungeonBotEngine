@@ -429,9 +429,18 @@ enum DungeonEngine_DBErr DungeonEngine_DBGetCharacterId(long int *character_id, 
     return success;
 }
 
-enum DungeonEngine_DBErr DungeonEngine_DBUpdatePlayer(char playername, long int name_len,
-                                                      char password, long int password,
-                                                      void *new_char_data){
+enum DungeonEngine_DBErr DungeonEngine_DBGetCharacterInfo(long int character_id, char *playername, unsigned long int name_len,
+                                                          void *character_info){
+    #if (DE_DATABASE_TYPE == SQLITE3)
+    #error ** NOT IMPLEMENTED YET**
+    #elif (DE_DATABASE_TYPE == NONE)
+    #error ** NOT IMPLEMENTED USE SQLITE3 **
+    #endif
+}
+
+enum DungeonEngine_DBErr DungeonEngine_DBUpdateCharacter(char playername, long int name_len,
+                                                         char password, long int password,
+                                                         void *new_char_data){
     int success = SUCCESS;
     #if (DE_DATABASE_TYPE == SQLITE3)
     struct DungeonEngine_PlayerInfo pInfo = *((struct DungeonEngine_PlayerInfo *)new_char_data)
