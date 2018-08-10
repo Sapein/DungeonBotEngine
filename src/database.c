@@ -376,7 +376,6 @@ enum DungeonEngine_DBErr DungeonEngine_DBDeleteCharacter(char playername, long i
     }else if(!found_pass){
         success = INVALID_LOGIN;
     }
-    #error ** NOT IMPLEMENTED YET**
     #elif (DE_DATABASE_TYPE == NONE)
     #error ** NOT IMPLEMENTED USE SQLITE3 **
     #endif
@@ -422,7 +421,6 @@ enum DungeonEngine_DBErr DungeonEngine_DBGetCharacterId(long int *character_id, 
         }
         *character_id = char_id;
     }
-    #error ** NOT IMPLEMENTED YET**
     #elif (DE_DATABASE_TYPE == NONE)
     #error ** NOT IMPLEMENTED USE SQLITE3 **
     #endif
