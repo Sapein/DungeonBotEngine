@@ -11,7 +11,7 @@
 #define CREATE_ACCOUNTS "CREATE TABLE Accounts(account_id INTEGER Primary Key, name TEXT, password BLOB);\0"
 #define CREATE_CHARACTERS "CREATE TABLE Characters(character_id INTEGER Primary Key, name TEXT, information BLOB);\0"
 #define CREATE_PLAYER_CHARS "CREATE TABLE Character_Owners(account_id INTEGER, character_id INTEGER);\0"
-#define STATEMENT_COUNT 18
+#define STATEMENT_COUNT 19
 #endif
 
 /* Stuff from players.c */
@@ -30,7 +30,7 @@ statis enum SQL_Statements {REGISTER_PLAYER, REGISTER_CHARACTER, REGISTER_OWNERS
                             UPDATE_CHARACTER_NAME, UPDATE_CHARACTER_INFORMATION,
                             GET_ACCOUNT_BY_PASS, GET_ACCOUNT_BY_NAME, GET_ACCOUNT_BY_PASSNAME,
                             GET_PASS_BY_NAME, GET_CHARACTER_BY_OWNER, GET_CHARACTER_BY_NAME,
-                            GET_CHARCTER_BY_INFO, GET_CHARACTER_BY_NAMEINFO,
+                            GET_CHARCTER_BY_INFO, GET_CHARACTER_BY_NAMEINFO, GET_INFO_BY_CHARACTER,
                             GET_NAME_BY_ACCOUNT};
 
 /* The Engine's Databse 'Object' */
@@ -56,6 +56,7 @@ static char *Statements[STATEMENT_COUNT] = {"INSERT INTO Accounts(name, password
                                             "SELECT character_id FROM Characters WHERE name=?;\0",
                                             "SELECT character_id FROM Characters WHERE information=?;\0",
                                             "SELECT character_id FROM Characters WHERE name=? and information=?;\0",
+                                            "SELECT information FROM Characters WHERE character_id=?;\0",
                                             "SELECT name FROM Accounts WHERE account_id=?;\0"
                              };
 static sqlite3_stmt *Common_Statements[STATEMENT_COUNT] = {NULL, NULL, NULL, NULL, NULL, NULL,
@@ -427,13 +428,23 @@ enum DungeonEngine_DBErr DungeonEngine_DBGetCharacterId(long int *character_id, 
     return success;
 }
 
-enum DungeonEngine_DBErr DungeonEngine_DBGetCharacterInfo(long int character_id, char *playername, unsigned long int name_len,
-                                                          void *character_info){
+enum DungeonEngine_DBErr DungeonEngine_DBGetCharacterInfo(long int character_id, void *character_info){
+    int success = SUCCESS;
     #if (DE_DATABASE_TYPE == SQLITE3)
-    #error ** NOT IMPLEMENTED YET**
+    struct DungeonEngine_Player pInfo;
+    sqlite3_bind_int(Common_Statements[GET_INFO_BY_CHARACTER], 1, character_id);
+    sqlite3_step(Common_Statements[GET_INFO_BY_CHARACTER]);
+    if(sqlite3_data_count(Common_Statements[GET_INFO_BY_CHARACTER]) > 0){
+        pInfo = *((struct DungeonEngine_Player *) sqlite3_column_blob(Common_Statements[GET_INFO_BY_CHARACTER], 1));
+        *((struct DungeonEngine_Player *)character_info) = pInfo;
+    }else{
+        character_info = NULL;
+        success = INVALID_CHARACTER;
+    }
     #elif (DE_DATABASE_TYPE == NONE)
     #error ** NOT IMPLEMENTED USE SQLITE3 **
     #endif
+    return success;
 }
 
 enum DungeonEngine_DBErr DungeonEngine_DBUpdateCharacter(char playername, long int name_len,
