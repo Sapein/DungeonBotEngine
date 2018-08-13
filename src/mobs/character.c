@@ -53,9 +53,9 @@ bool DungeonEngine_CharacterLoad(int character_id, ptr_CharacterToken *character
          * First it gets all Active Characters (so characters in use), and frees any non-active ones.
          * Then it takes all Active Characters and relocates them, to bring all remaining characters together.
          * Finally it removes the old memory of the relocated characters.
-         * It relocates in order of when they became active. So a character loaded after another character, but
-         *  made active before a character loaded before them will be moved closer to 0 than the other character.
-         * There are no guarentees this won't change.
+         * It reloactes characters in the order of when they were loaded. So a character loaded before another
+         *  character was loaded will be moved closer to 0 than the character loaded after.
+         * There are no guarantees this won't change.
          */
         if(LoadedCharacterCount >= DE_MAX_CHARACTERS_LOADABLE){
             struct DungeonEngine_Character TemporaryLoadBuffer[DE_MAX_CHARACTERS_LOADABLE];
