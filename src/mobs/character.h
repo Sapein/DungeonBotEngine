@@ -50,7 +50,7 @@ typedef struct *DungeonEngine_Character ptr_CharacterToken;
 
 int DungeonEngine_CharacterInit(void);
 int DungeonEngine_CharacterShutdown(void);
-bool DungeonEngine_CharacterLoad(int character_id, long int password, ptr_CharacterToken *character);
+bool DungeonEngine_CharacterLoad(int character_id, ptr_CharacterToken *character);
 bool DungeonEngine_CharacterUnload(ptr_CharacterToken *character);
 bool DungeonEngine_CharacterMoveRoom(ptr_CharacterToken *character, void *new_room);
 void *DungeonEngine_CharacterGetRoom(ptr_CharacterToken *character);
