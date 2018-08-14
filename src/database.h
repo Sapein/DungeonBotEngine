@@ -17,7 +17,7 @@ enum DungeonEngine_DBErr DungeonEngine_DBLoginPLayerByID(long int character_id, 
 enum DungeonEngine_DBErr DungeonEngine_DBDeletePlayer(char playername, long int name_len,
                                                       char password, long int password_len);
 enum DungeonEngine_DBErr DungeonEngine_DBGetPlayerName(unsigned long int player_id,
-                                                       char *playername, long int *name_len);
+                                                       char **playername, long int *name_len);
 enum DungeonEngine_DBErr DungeonEngine_DBGetPlayerId(long int *player_id, char *player_name, unsigned long int name_len);
 enum DungeonEngine_DBErr DungeonEngine_DBUpdatePlayer(char playername, long int name_len,
                                                       char password, long int password,

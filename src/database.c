@@ -264,7 +264,7 @@ enum DungeonEngine_DBErr DungeonEngine_DBDeletePlayer(char playername, long int 
     return success;
 }
 
-enum DungeonEngine_DBErr DungeonEngine_DBGetPlayerName(unsigned long int player_id, char *playername, long int *name_len);
+enum DungeonEngine_DBErr DungeonEngine_DBGetPlayerName(unsigned long int player_id, char **playername, long int *name_len);
     int success = SUCCESS;
     char *name = NULL;
     int len = 0;
@@ -273,7 +273,7 @@ enum DungeonEngine_DBErr DungeonEngine_DBGetPlayerName(unsigned long int player_
     sqlite3_step(Common_Statements[GET_NAME_BY_ACCOUNT]);
     name = sqlite3_column_text(Common_Statements[GET_NAME_BY_ACCOUNT], 1);
     len = sqlite3_column_bytes(Common_Statements[GET_NAME_BY_ACCOUNT], 1);
-    memcpy(playername, name, len);
+    memcpy(*playername, name, len);
     *name_len = len;
     sqlite3_clear_bindings(Common_Statements[GET_NAME_BY_ACCOUNT]);
     sqlite3_reset(Common_Statements[GET_NAME_BY_ACCOUNT]);
