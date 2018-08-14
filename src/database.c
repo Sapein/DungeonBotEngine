@@ -1,6 +1,7 @@
 #include "database.h"
 #include "config.h"
-#include "players.h"
+#include "mobs/players.h"
+#include "mobs/character.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -308,10 +309,10 @@ enum DungeonEngine_DBErr DungeonEngine_DBUpdatePlayer(char playername, long int 
 
 /* Character Functions */
 enum DungeonEngine_DBErr DungeonEngine_DBAddCharacter(char playername, long int name_len, char password, long int password_len,
-                                                      void *player_data){
-    int success = SUCCESS:
+                                                      void *character_data){
+    int success = SUCCESS;
     #if (DE_DATABASE_TYPE == SQLITE3)
-    struct DungeonEngine_PlayerInfo pInfo = *((struct DungeonEngine_PlayerInfo *)player_data);
+    struct DungeonEngine_CharacterInfo cInfo = *((struct DungeonEngine_CharacterInfo *)character_data);
     unsigned long int account_id = 0;
     unsigned long int character_id = 0;
     char *stored_pass = NULL;
@@ -342,16 +343,16 @@ enum DungeonEngine_DBErr DungeonEngine_DBAddCharacter(char playername, long int 
         sqlite3_clear_bindings(Common_Statements[GET_ACCOUNT_BY_PASSNAME]);
         sqlite3_reset(Common_Statements[GET_ACCOUNT_BY_PASSNAME]);
 
-        sqlite3_bind_text(Common_Statements[REGISTER_CHARACTER], 1, pInfo.character_name, pInfo.char_name_len, SQLITE_STATIC);
-        sqlite3_bind_blob(Common_Statements[REGISTER_CHARACTER], 2, pInfo,
-                          (sizeof(pInfo) + (pInfo.char_name_len * sizeof(char))), SQLITE_STATIC);
+        sqlite3_bind_text(Common_Statements[REGISTER_CHARACTER], 1, cInfo.name, cInfo.name_len SQLITE_STATIC);
+        sqlite3_bind_blob(Common_Statements[REGISTER_CHARACTER], 2, cInfo,
+                          (sizeof(struct DungeonEngine_CharacterInfo) + (cInfo.name_len * sizeof(char))), SQLITE_STATIC);
         sqlite3_step(Common_Statements[REGISTER_CHARACTER]);
         sqlite3_clear_bindings(Common_Statements[REGISTER_CHARACTER]);
         sqlite3_reset(Common_Statements[REGISTER_CHARACTER]);
 
-        sqlite3_bind_text(Common_Statements[GET_CHARACTER_BY_NAMEINFO], 1, pInfo.character_name, pInfo.char_name_len, SQLITE_STATIC);
-        sqlite3_bind_blob(Common_Statements[GET_CHARACTER_BY_NAMEINFO], 2, pInfo,
-                          sizeof(pInfo) + (pInfo.char_name_len * sizeof(char)), SQLITE_STATIC);
+        sqlite3_bind_text(Common_Statements[GET_CHARACTER_BY_NAMEINFO], 1, cInfo.name, cInfo.name_len, SQLITE_STATIC);
+        sqlite3_bind_blob(Common_Statements[GET_CHARACTER_BY_NAMEINFO], 2, cInfo,
+                          sizeof(struct DungeonEngine_CharacterInfo) + (cInfo.name_len * sizeof(char)), SQLITE_STATIC);
         sqlite3_step(Common_Statements[GET_CHARACTER_BY_NAMEINFO]);
         character_id = sqlite3_column_int(Common_Statements[GET_CHARACTER_BY_NAMEINFO], 1);
         sqlite3_clear_bindings(Common_Statements[GET_CHARACTER_BY_NAMEINFO]);
@@ -376,7 +377,7 @@ enum DungeonEngine_DBErr DungeonEngine_DBDeleteCharacter(char playername, long i
                                                          void *player_data){
     int success = SUCCESS;
     #if (DE_DATABASE_TYPE == SQLITE3)
-    struct DungeonEngine_PlayerInfo pInfo = *((struct DungeonEngine_PlayerInfo *)player_data);
+    struct DungeonEngine_CharacterInfo cInfo = *((struct DungeonEngine_CharacterInfo *)character_data);
     unsigned long int account_id = 0;
     long int character_id = -1;
     char *stored_pass = NULL;
@@ -413,7 +414,7 @@ enum DungeonEngine_DBErr DungeonEngine_DBDeleteCharacter(char playername, long i
             int checking_id = 0;
             checking_id = sqlite3_column_int(Common_Statements[GET_CHARACTER_BY_OWNER], i);
 
-            sqlite3_bind_text(Common_Statements[GET_CHARACTER_BY_NAME], 1, pInfo.character_name, pInfo.char_name_len, SQLITE_STATIC);
+            sqlite3_bind_text(Common_Statements[GET_CHARACTER_BY_NAME], 1, cInfo.name, cInfo.name_len, SQLITE_STATIC);
             sqlite3_step(Common_Statements[GET_CHARACTER_BY_NAME]);
             for(int y = 0; y > sqlite3_column_count(Common_Statements[GET_CHARACTER_BY_NAME]); y++){
                 y = sqlite3_column_int(Common_Statements[GET_CHARACTER_BY_NAME], y);
@@ -495,12 +496,12 @@ enum DungeonEngine_DBErr DungeonEngine_DBGetCharacterId(long int *character_id, 
 enum DungeonEngine_DBErr DungeonEngine_DBGetCharacterInfo(long int character_id, void *character_info){
     int success = SUCCESS;
     #if (DE_DATABASE_TYPE == SQLITE3)
-    struct DungeonEngine_Player pInfo;
+    struct DungeonEngine_Character cInfo;
     sqlite3_bind_int(Common_Statements[GET_INFO_BY_CHARACTER], 1, character_id);
     sqlite3_step(Common_Statements[GET_INFO_BY_CHARACTER]);
     if(sqlite3_data_count(Common_Statements[GET_INFO_BY_CHARACTER]) > 0){
-        pInfo = *((struct DungeonEngine_Player *) sqlite3_column_blob(Common_Statements[GET_INFO_BY_CHARACTER], 1));
-        *((struct DungeonEngine_Player *)character_info) = pInfo;
+        cInfo = *((struct DungeonEngine_Character *) sqlite3_column_blob(Common_Statements[GET_INFO_BY_CHARACTER], 1));
+        *((struct DungeonEngine_Player *)character_info) = cInfo;
     }else{
         character_info = NULL;
         success = INVALID_CHARACTER;
@@ -516,7 +517,7 @@ enum DungeonEngine_DBErr DungeonEngine_DBUpdateCharacter(char playername, long i
                                                          void *new_char_data){
     int success = SUCCESS;
     #if (DE_DATABASE_TYPE == SQLITE3)
-    struct DungeonEngine_PlayerInfo pInfo = *((struct DungeonEngine_PlayerInfo *)new_char_data)
+    struct DungeonEngine_CharacterInfo cInfo = *((struct DungeonEngine_CharacterInfo) new_char_data)
     char *stored_pass = NULL;
     int stored_pass_length = 0;
     _Bool found_pass = false;
@@ -537,15 +538,15 @@ enum DungeonEngine_DBErr DungeonEngine_DBUpdateCharacter(char playername, long i
     sqlite3_clear_bindings(Common_Statements[GET_PASS_BY_NAME]);
     sqlite3_reset(Common_Statements[GET_PASS_BY_NAME]);
 
-    sqlite3_bind_text(Common_Statements[UPDATE_CHARACTER_NAME], 1, pInfo.character_name, pInfo.char_name_len, SQLITE_STATIC);
-    sqlite3_bind_int(Common_Statements[UPDATE_CHARACTER_NAME], 2, pInfo.character_id);
+    sqlite3_bind_text(Common_Statements[UPDATE_CHARACTER_NAME], 1, cInfo.name, cInfo.name_len, SQLITE_STATIC);
+    sqlite3_bind_int(Common_Statements[UPDATE_CHARACTER_NAME], 2, cInfo.character_id);
     sqlite3_step(Common_Statements[UPDATE_CHARACTER_NAME]);
     sqlite3_clear_bindings(Common_Statements[UPDATE_CHARACTER_NAME]);
     sqlite3_reset(Common_Statements[UPDATE_CHARACTER_NAME]);
 
-    sqlite3_bind_blob(Common_Statements[UPDATE_CHARACTER_INFORMATION], 1, pInfo,
-                      sizeof(struct DungeonEngine_PlayerInfo) + (sizeof(char) * pInfo.char_name_len) , SQLITE_STATIC);
-    sqlite3_bind_int(Common_Statements[UPDATE_CHARACTER_INFORMATION], 2, pInfo.character_id);
+    sqlite3_bind_blob(Common_Statements[UPDATE_CHARACTER_INFORMATION], 1, cInfo,
+                      sizeof(struct DungeonEngine_CharacterInfo) + (sizeof(char) * cInfo.name_len) , SQLITE_STATIC);
+    sqlite3_bind_int(Common_Statements[UPDATE_CHARACTER_INFORMATION], 2, cInfo.character_id);
     sqlite3_step(Common_Statements[UPDATE_CHARACTER_INFORMATION]);
     sqlite3_clear_bindings(Common_Statements[UPDATE_CHARACTER_INFORMATION]);
     sqlite3_reset(Common_Statements[UPDATE_CHARACTER_INFORMATION]);

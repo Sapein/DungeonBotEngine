@@ -26,7 +26,7 @@ enum DungeonEngine_DBErr DungeonEngine_DBUpdatePlayer(char playername, long int 
 /* Character Functions */
 enum DungeonEngine_DBErr DungeonEngine_DBAddCharacter(char playername, long int name_len,
                                                       char password, long int password_len,
-                                                      void *player_data);
+                                                      void *character_data);
 enum DungeonEngine_DBErr DungeonEngine_DBDeleteCharacter(char playername, long int name_len,
                                                          char password, long int password_len,
                                                          void *player_data);
