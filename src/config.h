@@ -7,4 +7,7 @@
 /* Can either be NONE or SQLITE3 */
 #define DE_DATABASE_TYPE SQLITE3
 #define DE_DATABASE_PATH "dungeonbot.db"
+
+/* Registration Settings */
+#define DE_INTERNAL_HASHING OFF /* Can either be OFF or ON */
 #endif
