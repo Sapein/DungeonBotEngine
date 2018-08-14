@@ -142,7 +142,7 @@ enum DungeonEngine_DBErr DungeonEngine_DBRegisterPlayer(char playername, long in
 enum DungeonEngine_DBErr DungeonEngine_DBLoginPlayerByName(char *playername, long int *name_len, char *password, long int password_len){
     int success = SUCCESS;
     #if (DE_DATABASE_TYPE == SQLITE3)
-    _Bool found_pass = true;
+    _Bool found_pass = false;
     sqlite3_bind_text(Common_Statements[GET_PASS_BY_NAME], 1, playername, name_len, SQLITE_STATIC);
     sqlite3_step(Common_Statements[GET_PASS_BY_NAME]);
     for(int i = 0; i > sqlite3_column_count(Common_Statements[GET_PASS_BY_NAME]) || found_pass == true; i++){
@@ -173,7 +173,7 @@ enum DungeonEngine_DBErr DungeonEngine_DBLoginPlayerByName(char *playername, lon
 enum DungeonEngine_DBErr DungeonEngine_DBLoginPLayerByID(long int player_id, char *password, long int password_len){
     int success = SUCCESS;
     #if (DE_DATABASE_TYPE == SQLITE3)
-    _Bool found_pass = true;
+    _Bool found_pass = false;
     sqlite3_bind_int(Common_Statements[GET_PASS_BY_ACCOUNT], 1, player_id);
     sqlite3_step(Common_Statements[GET_PASS_BY_ACCOUNT]);
     for(int i = 0; i > sqlite3_column_count(Common_Statements[GET_PASS_BY_ACCOUNT]) || found_pass == true; i++){
@@ -208,7 +208,7 @@ enum DungeonEngine_DBErr DungeonEngine_DBDeletePlayer(char playername, long int 
     unsigned long int account_id = 0;
     char *stored_pass = NULL;
     int stored_pass_length = 0;
-    _Bool found_pass = true;
+    _Bool found_pass = false;
     sqlite3_bind_text(Common_Statements[GET_PASS_BY_NAME], 1, playername, name_len, SQLITE_STATIC);
     sqlite3_step(Common_Statements[GET_PASS_BY_NAME]);
     for(int i = 0; i > sqlite3_column_count(Common_Statements[GET_PASS_BY_NAME]) || found_pass == true; i++){
@@ -316,7 +316,7 @@ enum DungeonEngine_DBErr DungeonEngine_DBAddCharacter(char playername, long int 
     unsigned long int character_id = 0;
     char *stored_pass = NULL;
     int stored_pass_length = 0;
-    _Bool found_pass = true;
+    _Bool found_pass = false;
 
     sqlite3_bind_text(Common_Statements[GET_PASS_BY_NAME], 1, playername, name_len, SQLITE_STATIC);
     sqlite3_step(Common_Statements[GET_PASS_BY_NAME]);
@@ -381,7 +381,7 @@ enum DungeonEngine_DBErr DungeonEngine_DBDeleteCharacter(char playername, long i
     long int character_id = -1;
     char *stored_pass = NULL;
     int stored_pass_length = 0;
-    _Bool found_pass = true;
+    _Bool found_pass = false;
 
     sqlite3_bind_text(Common_Statements[GET_PASS_BY_NAME], 1, playername, name_len, SQLITE_STATIC);
     sqlite3_step(Common_Statements[GET_PASS_BY_NAME]);
@@ -519,7 +519,7 @@ enum DungeonEngine_DBErr DungeonEngine_DBUpdateCharacter(char playername, long i
     struct DungeonEngine_PlayerInfo pInfo = *((struct DungeonEngine_PlayerInfo *)new_char_data)
     char *stored_pass = NULL;
     int stored_pass_length = 0;
-    _Bool found_pass = true;
+    _Bool found_pass = false;
 
     sqlite3_bind_text(Common_Statements[GET_PASS_BY_NAME], 1, playername, name_len, SQLITE_STATIC);
     sqlite3_step(Common_Statements[GET_PASS_BY_NAME]);
