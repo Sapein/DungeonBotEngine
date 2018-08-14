@@ -19,37 +19,20 @@
 #define SDEPLAYERS
 #include <stdbool.h>
 
-enum DungeonEngine_CharClass {WARRIOR};
-enum DungeonEngine_CharRace {HUMAN};
-enum DungeonEngine_CharAttributes {STR, CON, WIS,
-                                   DEX, CHA, INT};
-
 struct DungeonEngine_Player;
 struct DungeonEngine_PlayerInfo {
-    int character_id;
-    enum DungeonEngine_CharClass char_class;
-    enum DungeonEngine_CharRace char_race;
-    int char_attributes[6];
-    int char_level;
-    int char_name_len;
-    int height;
-    int weight;
-    void *current_room;
-    void *current_dungeon;
-    void *inventory;
-    char character_name[];
+    unsigned long int player_id;
+    unsigned long int name_len;
+    char *name;
 };
-
-typedef struct *DungeonEngine_Player ptr_PlayerToken
+typedef struct DungeonEngine_Player *ptr_PlayerToken;
 
 int DungeonEngine_PlayerInit(void);
-bool DungeonEngine_PlayerLogin(int character_id, long int password, *ptr_PlayerToken Token);
-bool DungeonEngine_PlayerRegister(struct DungeonEngine_PlayerInfo, long int password, *ptr_PlayerToken Token);
-struct DungeonEngine_PlayerInfo DungeonEngine_PlayerCreate(enum DungeonEngine_CharClass char_class,
-                                                           enum DungeonEngine_CharRace char_race,
-                                                           int char_attributes[6], int char_level,
-                                                           int height, int weight,
-                                                           int char_name_len, char character_name[])
-struct DungeonEngine_PlayerInfo DungeonEngine_PlayerGet(ptr_PlayerToken);
-ptr_PlayerToken DungeonEngine_GetPlayer(int character_id);
+bool DungeonEngine_PlayerLoginByName(char *player_name, unsigned long int name_len,
+                                     char *password, unsigned long int password_len,
+                                     ptr_PlayerToken *Token);
+bool DungeonEngine_PlayerLoginByID(int player_id, char *password, unsigned long int password_len, 
+                                   ptr_PlayerToken *Token);
+struct DungeonEngine_PlayerInfo DungeonEngine_PlayerGetInfo(ptr_PlayerToken Token);
+#define DungeonEngine_PlayerLogin DungeonEngine_PlayerLoginByName
 #endif
