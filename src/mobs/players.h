@@ -28,10 +28,15 @@ struct DungeonEngine_PlayerInfo {
 typedef struct DungeonEngine_Player *ptr_PlayerToken;
 
 int DungeonEngine_PlayerInit(void);
+int DungeonEngine_PlayerShutdown(void);
+_Bool DungeonEngine_PlayerRegister(char *player_name, unsigned long int name_len,
+                                   char *password, unsigned long int password_len);
+_Bool DungeonEngine_PlayerDelete(char *player_name, unsigned long int name_len,
+                                 char *password, unsigned long int password_len);
 bool DungeonEngine_PlayerLoginByName(char *player_name, unsigned long int name_len,
                                      char *password, unsigned long int password_len,
                                      ptr_PlayerToken *Token);
-bool DungeonEngine_PlayerLoginByID(int player_id, char *password, unsigned long int password_len, 
+bool DungeonEngine_PlayerLoginByID(int player_id, char *password, unsigned long int password_len,
                                    ptr_PlayerToken *Token);
 struct DungeonEngine_PlayerInfo DungeonEngine_PlayerGetInfo(ptr_PlayerToken Token);
 #define DungeonEngine_PlayerLogin DungeonEngine_PlayerLoginByName

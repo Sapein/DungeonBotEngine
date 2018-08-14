@@ -18,9 +18,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include "players.h"
-#include "../quickhash.h"
 #include "../config.h"
 #include "../database.h"
+#if (DE_INTERNAL_HASHING == ON)
+#include "../quickhash.h"
+#endif
 
 struct DungeonEngine_Player {
     struct DungeonEngine_PlayerInfo *;
@@ -30,6 +32,30 @@ struct DungeonEngine_Player {
 
 int DungeonEngine_PlayerInit(void){
     return 0;
+}
+
+int DungeonEngine_PlayerShutdown(void){
+    return 0;
+}
+
+_Bool DungeonEngine_PlayerRegister(char *player_name, unsigned long int name_len, char *password, unsigned long int password_len){
+    _Bool success = true;
+    int return_code = 0;
+    if((return_code = DungeonEngine_DBRegisterPlayer(player_name, (long int)name_len, 
+                                                     password, (long int)password_len)) != SUCCESS){
+        success = false;
+    }
+    return success;
+}
+
+_Bool DungeonEngine_PlayerDelete(char *player_name, unsigned long int name_len, char *password, unsigned long int password_len){
+    _Bool success = true;
+    int return_code = 0;
+    if((return_code = DungeonEngine_DBDeletePlayer(player_name, (long int)name_len, 
+                                                   password, (long int)password_len)) != SUCCESS){
+        success = false;
+    }
+    return success;
 }
 
 bool DungeonEngine_PlayerLoginByName(char *player_name, unsigned long int name_len, char *password, unsigned long int password_len,
