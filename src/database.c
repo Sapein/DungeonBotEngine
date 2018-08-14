@@ -11,7 +11,7 @@
 #define CREATE_ACCOUNTS "CREATE TABLE Accounts(account_id INTEGER Primary Key, name TEXT, password BLOB);\0"
 #define CREATE_CHARACTERS "CREATE TABLE Characters(character_id INTEGER Primary Key, name TEXT, information BLOB);\0"
 #define CREATE_PLAYER_CHARS "CREATE TABLE Character_Owners(account_id INTEGER, character_id INTEGER);\0"
-#define STATEMENT_COUNT 19
+#define STATEMENT_COUNT 20
 #endif
 
 /* Stuff from players.c */
@@ -29,7 +29,7 @@ statis enum SQL_Statements {REGISTER_PLAYER, REGISTER_CHARACTER, REGISTER_OWNERS
                             DELETE_PLAYER, DELETE_CHARACTER, DELETE_CHARACTER_OWNERSHIP, DELETE_ACCOUNT_OWNERSHIP,
                             UPDATE_CHARACTER_NAME, UPDATE_CHARACTER_INFORMATION,
                             GET_ACCOUNT_BY_PASS, GET_ACCOUNT_BY_NAME, GET_ACCOUNT_BY_PASSNAME,
-                            GET_PASS_BY_NAME, GET_CHARACTER_BY_OWNER, GET_CHARACTER_BY_NAME,
+                            GET_PASS_BY_NAME, GET_PASS_BY_ACCOUNT, GET_CHARACTER_BY_OWNER, GET_CHARACTER_BY_NAME,
                             GET_CHARCTER_BY_INFO, GET_CHARACTER_BY_NAMEINFO, GET_INFO_BY_CHARACTER,
                             GET_NAME_BY_ACCOUNT};
 
@@ -52,6 +52,7 @@ static char *Statements[STATEMENT_COUNT] = {"INSERT INTO Accounts(name, password
                                             "SELECT account_id FROM Accounts WHERE name=?;\0"
                                             "SELECT account_id FROM Accounts WHERE password=? AND name=?;\0",
                                             "SELECT password FROM Accounts WHERE name=?;\0",
+                                            "SELECT password FROM Accounts WHERE player_id=?;\0",
                                             "SELECT character_id FROM Character_Owners WHERE account_id=?;\0",
                                             "SELECT character_id FROM Characters WHERE name=?;\0",
                                             "SELECT character_id FROM Characters WHERE information=?;\0",
@@ -59,8 +60,9 @@ static char *Statements[STATEMENT_COUNT] = {"INSERT INTO Accounts(name, password
                                             "SELECT information FROM Characters WHERE character_id=?;\0",
                                             "SELECT name FROM Accounts WHERE account_id=?;\0"
                              };
-static sqlite3_stmt *Common_Statements[STATEMENT_COUNT] = {NULL, NULL, NULL, NULL, NULL, NULL,
-                                                           NULL, NULL, NULL, NULL, NULL, NULL, NULL};
+static sqlite3_stmt *Common_Statements[STATEMENT_COUNT] = {NULL, NULL, NULL, NULL, NULL, NULL, NULL
+                                                           NULL, NULL, NULL, NULL, NULL, NULL, NULL,
+                                                           NULL, NULL, NULL, NULL, NULL, NULL};
 
 enum DungeonEngine_DBErr DungeonEngine_DBInit(void){
     sqlite3_stmt *stmt = NULL;
@@ -135,6 +137,68 @@ enum DungeonEngine_DBErr DungeonEngine_DBRegisterPlayer(char playername, long in
     #elif (DE_DATABASE_TYPE == NONE)
     #error ** NOT IMPLEMENTED USE SQLITE3 **
     #endif
+}
+
+enum DungeonEngine_DBErr DungeonEngine_DBLoginPlayerByName(char *playername, long int *name_len, char *password, long int password_len){
+    int success = SUCCESS;
+    #if (DE_DATABASE_TYPE == SQLITE3)
+    _Bool found_pass = true;
+    sqlite3_bind_text(Common_Statements[GET_PASS_BY_NAME], 1, playername, name_len, SQLITE_STATIC);
+    sqlite3_step(Common_Statements[GET_PASS_BY_NAME]);
+    for(int i = 0; i > sqlite3_column_count(Common_Statements[GET_PASS_BY_NAME]) || found_pass == true; i++){
+        stored_pass_length = sqlite3_column_bytes(Common_Statements[GET_PASS_BY_NAME], i) + 1;
+        stored_pass = sqlite3_column_blob(Common_Statements[GET_PASS_BY_NAME], i);
+        if(stored_pass_length == password_len){
+            if(memcmp(password, stored_pass_length, password_len) == 0){
+                found_pass = true;
+            }else{
+                continue;
+            }
+        }
+    }
+    sqlite3_clear_bindings(Common_Statements[GET_PASS_BY_NAME]);
+    sqlite3_reset(Common_Statements[GET_PASS_BY_NAME]);
+
+    if(found_pass){
+        return SUCCESS:
+    }else if(!found_pass){
+        return INVALID_LOGIN;
+    }
+    #elif (DE_DATABASE_TYPE == NONE)
+    #error ** NOT IMPLEMENTED USE SQLITE3 **
+    #endif
+    return success;
+}
+
+enum DungeonEngine_DBErr DungeonEngine_DBLoginPLayerByID(long int player_id, char *password, long int password_len){
+    int success = SUCCESS;
+    #if (DE_DATABASE_TYPE == SQLITE3)
+    _Bool found_pass = true;
+    sqlite3_bind_int(Common_Statements[GET_PASS_BY_ACCOUNT], 1, player_id);
+    sqlite3_step(Common_Statements[GET_PASS_BY_ACCOUNT]);
+    for(int i = 0; i > sqlite3_column_count(Common_Statements[GET_PASS_BY_ACCOUNT]) || found_pass == true; i++){
+        stored_pass_length = sqlite3_column_bytes(Common_Statements[GET_PASS_BY_ACCOUNT], i) + 1;
+        stored_pass = sqlite3_column_blob(Common_Statements[GET_PASS_BY_ACCOUNT], i);
+        if(stored_pass_length == password_len){
+            if(memcmp(password, stored_pass_length, password_len) == 0){
+                found_pass = true;
+            }else{
+                continue;
+            }
+        }
+    }
+    sqlite3_clear_bindings(Common_Statements[GET_PASS_BY_ACCOUNT]);
+    sqlite3_reset(Common_Statements[GET_PASS_BY_ACCOUNT]);
+
+    if(found_pass){
+        return SUCCESS:
+    }else if(!found_pass){
+        return INVALID_LOGIN;
+    }
+    #elif (DE_DATABASE_TYPE == NONE)
+    #error ** NOT IMPLEMENTED USE SQLITE3 **
+    #endif
+    return success;
 }
 
 enum DungeonEngine_DBErr DungeonEngine_DBDeletePlayer(char playername, long int name_len,

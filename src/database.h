@@ -10,6 +10,10 @@ enum DungeonEngine_DBErr DungeonEngine_DBShutdown(void);
 /* Player Functions */
 enum DungeonEngine_DBErr DungeonEngine_DBRegisterPlayer(char playername, long int name_len,
                                                         char password, long int password_len);
+enum DungeonEngine_DBErr DungeonEngine_DBLoginPlayerByName(char *playername, long int *name_len,
+                                                           char *password, long int password_len);
+enum DungeonEngine_DBErr DungeonEngine_DBLoginPLayerByID(long int character_id, char *password,
+                                                         long int password_len);
 enum DungeonEngine_DBErr DungeonEngine_DBDeletePlayer(char playername, long int name_len,
                                                       char password, long int password_len);
 enum DungeonEngine_DBErr DungeonEngine_DBGetPlayerName(unsigned long int player_id,
