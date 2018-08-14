@@ -126,7 +126,7 @@ enum DungeonEngine_DBErr DungeonEngine_DBShutdown(void){
 }
 
 /* Player Functions */
-enum DungeonEngine_DBErr DungeonEngine_DBRegisterPlayer(char playername, long int name_len,
+enum DungeonEngine_DBErr DungeonEngine_DBRegisterPlayer(char *playername, long int name_len,
                                                         char password, long int password_len){
     #if (DE_DATABASE_TYPE == SQLITE3)
     sqlite3_bind_text(Common_Statements[REGISTER_PLAYER], 1, playername, name_len, SQLITE_STATIC);
