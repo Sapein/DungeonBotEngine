@@ -127,7 +127,7 @@ enum DungeonEngine_DBErr DungeonEngine_DBShutdown(void){
 
 /* Player Functions */
 enum DungeonEngine_DBErr DungeonEngine_DBRegisterPlayer(char *playername, long int name_len,
-                                                        char password, long int password_len){
+                                                        char *password, long int password_len){
     #if (DE_DATABASE_TYPE == SQLITE3)
     sqlite3_bind_text(Common_Statements[REGISTER_PLAYER], 1, playername, name_len, SQLITE_STATIC);
     sqlite3_bind_blob(Common_Statements[REGISTER_PLAYER], 2, password, password_len, SQLITE_STATIC);
@@ -201,8 +201,8 @@ enum DungeonEngine_DBErr DungeonEngine_DBLoginPLayerByID(long int player_id, cha
     return success;
 }
 
-enum DungeonEngine_DBErr DungeonEngine_DBDeletePlayer(char playername, long int name_len,
-                                                      char password, long int password_len){
+enum DungeonEngine_DBErr DungeonEngine_DBDeletePlayer(char *playername, long int name_len,
+                                                      char *password, long int password_len){
     int success = SUCCESS;
     #if (DE_DATABASE_TYPE == SQLITE3)
     unsigned long int account_id = 0;
