@@ -77,7 +77,7 @@ The syntax of setting flags is as follows: +[flag] to set the flag and -[flag] t
    `dungeon_entrance` denotes a room that is the Entrance for the dungeon, a player may abandon the dungeon from here, and all players initially spawn here. Only one room with this flag will be placed into a dungeon, no matter what. 
 
 This flag automatically sets the following flags for this room: `+safe_room`, `+north_exit`, `+south_exit`, `+east_exit`, `+north_exit`
-This flag automatically unsets the following flags for this room: `-boss`, `-monster_spawn`, `dungeon_exit`, `-trap`
+This flag automatically unsets the following flags for this room: `-boss`, `-monster_spawn`, `-dungeon_exit`, `-trap`
 
 **Dungeon Exit**
    `dungeon_exit` denotes a room that is the exit for the dungeon, a player may complete the dungeon from here. All dungeons will spawn with exactly one exit, no other rooms with this flag will be included in the dungeon.
