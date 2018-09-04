@@ -10,8 +10,8 @@
  *  it is advised to make sure that DE_GENERATION_HEIGHT plus DE_GENERATION_WIDTH are not less
  *  than DE_MAX_ROOMS */
 #define DE_MAX_ROOMS 100
-#define DE_GENERATION_HEIGHT 100
-#define DE_GENERATION_WIDTH  100
+#define DE_GENERATION_HEIGHT 100 /*Y Values*/
+#define DE_GENERATION_WIDTH  100 /*X Values*/
 
 /* Can either be NONE or SQLITE3 */
 #define DE_DATABASE_TYPE SQLITE3
@@ -19,4 +19,12 @@
 
 /* Registration Settings */
 #define DE_INTERNAL_HASHING OFF /* Can either be OFF or ON */
+
+/************************************
+ ***       ADVANCED SETTINGS      ***
+ ************************************
+ *** !WARNING! DO NOT EDIT UNLESS ***
+ ***  YOU KNOW WHAT YOU ARE DOING ***
+ ************************************/
+#define DE_COORDINATE_BASED off /*on = the dungeon is 'coordinate-based' ; off = the dungeon is not coordindate-based*/
 #endif
