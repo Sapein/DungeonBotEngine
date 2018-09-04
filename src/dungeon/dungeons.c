@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdbool.h>
 #include <string.h>
 #include <stdlib.h>
 #include <time.h>
@@ -22,8 +23,10 @@ void DungeonEngine_RandomDungeonSeed(void){
 }
 
 int DungeonEngine_DungeonGenerate(struct DungeonEngine_RoomsLoaded *rooms, union DungeonEngine_Dungeon){
+    enum gen_direction {NORTH, SOUTH, EAST, WEST};
     int dungeon[DE_GENERATION_WIDTH][DE_GENERATION_HEIGHT];
     int x, y, count = 0;
+    enum gen_direction direction = EAST;
     int dungeon_id = 0;
 
     srand(Generation_Seed);
@@ -31,21 +34,40 @@ int DungeonEngine_DungeonGenerate(struct DungeonEngine_RoomsLoaded *rooms, union
     x = 0;
     y = DE_GENERATION_HEIGHT / 2;
     dungeon[x][y] = true;
+    y++;
     while(count <= DE_MAX_ROOMS){
-        int new_direction = 2; /* 0 = North, 1 = South, 2 = East, 3 = West */
-        switch(new_direction){
-            case 3:
+        _Bool direction_change = false;
+        int x_allowed = 0; /* 0 = North and South allowed; 1 = North exceedes; 2 = South Exceeds */
+        int y_allowed = 0; /* 0 = East and West allowed; 1 = East exceeds; 2 = West Exceeds; */
+        dungeon[x][y] = true;
+
+        if(x < DE_GENERATION_WIDTH){
+            x_allowed = 1;
+        }else if(x < 0){
+            x_allowed = 2
+        }
+
+        if(y < DE_GENERATION_HEIGHT){
+            y_allowed = 1;
+        }else if(y < 0){
+            y_allowed = 2;
+        }
+        
+        /*TODO - Work on Dungeon Generation */
+
+        /* Are we changing direction */
+        if((rand() % 2) == true){
+            /* Generate New Direction */
+        }
+        switch(gen_direction){
+            case NORTH:
                 break;
-            case 2:
-                y++;
-                dungeon[x][y] = true;
+            case SOUTH:
                 break;
-            case 1:
+            case EAST:
                 break;
-            case 0:
+            case WEST:
                 break;
-            default:
-                return 100;
         }
     }
 
