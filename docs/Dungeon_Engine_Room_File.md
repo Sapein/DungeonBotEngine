@@ -46,11 +46,17 @@ If you wish to see the Version of the Dungeon Engine Room File format defined by
 ### 3. Room Name/Title  
    This line contains the Room Name/Title. This is what the room is 'called'. A Generic name may be provided, or it may be blank. If it is blank the default Room Name is just `Room #`. The # is replaced with a number, which is determined by starting at 1 and increasing for each room with a name like this. 
 
+There is a limit of 499 Characters on the room name.
+
 ### 4. Room Short Description
    This line contains a short description of the Room, generally what is displayed when showing options for movement into the next room, and someone looks into it. Additionally, this may be displayed when a room is entered, depending on the UI.
 
+The short description can not be longer than 999 Characters.
+
 ### 5. Room Long Description
    This line contains a long description of the Room, and this is what is displayed upon requesting more information about the room, or upon entering, depending on the UI. This line may be multiple lines long.
+
+The long room description can not be longer than 9,998 Characters.
 
 ### 6. Flags  
    Flags denote options and settings for this room, this line **MUST** start with `Flags:`, in order to separate it from the Long Description. Additionally, flags may not be broken accross lines. The list of flags is as follows:
@@ -64,7 +70,6 @@ If you wish to see the Version of the Dungeon Engine Room File format defined by
 * south_exit
 * east_exit
 * west_exit
-* non_euclidian
 * trap
 * magic
 
@@ -113,7 +118,7 @@ This flag automatically sets the following flags for this room: N/A
 This flag automatically unsets the following flags for this room: `-monster_spawn`, `-trap`, `-boss_spawn`
 
 ###### 6.3 Exit Flags
-   Exit flags are special, in that they denote exits to a room. All exits, by default, are filled, during dungeon generation, although this bevhaior may be changed at compile time. The exit flags are as follows: `north_exit`, `south_exit`, `east_exit`, and `west_exit`. A room that has an exit in one direction, will always be entrable from the opposite direction, unless the `non_euclidian` flag is specified. These flags are directly related to how a dungeon generates. These flags never automatically set different flags.
+   Exit flags are special, in that they denote exits to a room. All exits, by default, are filled, during dungeon generation, although this bevhaior may be changed at compile time. The exit flags are as follows: `north_exit`, `south_exit`, `east_exit`, and `west_exit`. A room that has an exit in one direction, will always be entrable from the opposite direction. These flags are directly related to how a dungeon generates. These flags never automatically set different flags.
 
 **North Exit**  
    `north_exit` denotes an exit in the "north" of the room. The `north_exit` of this room is generally the next room's `south_exit`. 
@@ -128,14 +133,7 @@ This flag automatically unsets the following flags for this room: `-monster_spaw
    `west_exit` denotes an exit in the "west" of the room. The `west_exit` of this room is generally the next room's `east_exit`.
 
 ###### 6.4 Special Flags   
-   Special flags are, well, special. They denote special behavior, or characteristics, of a room. For example, whether or not the room is under a magical effect (or if items may have a magical effect) or not. They may also alter the behavior of a room entirely. There are currently three special flags: `non-euclidian`, `magic`, and `trap`.
-
-**Non-Euclidian**  
-   `non-euclidian` is a special flag that alters the way rooms are linked, and thus, how dungeons are generated. When this flag is specified on a room, exits in another room may connect to this room, and such exits may be one-way or may connect to different exits. So, for example, a room with this flag can have a `west_exit` flag set, but connect to a room with this flag that is without an `east_exit`, but instead is connected through the `north_exit`. Another example is if a room with this flag set has an `east_exit` that may connect to a room with a `north_exit`, but is not connectable to this room. All exits for a non-euclidian room may not make sense, and may be one way. 
-
-During compilation of Dungeon Engine you can specify `DE_EUCLIDIAN_ONLY` to have this flag be ignored, or specify `DE_NONEUCLIDIAN_CONNECTS` which means that a Non-Euclidian room must either have a euclidian exit, or have a non-euclidian exit to another Non-Euclidian room.
-
-This flag does not automatically set or unset any flags.
+   Special flags are, well, special. They denote special behavior, or characteristics, of a room. For example, whether or not the room is under a magical effect (or if items may have a magical effect) or not. They may also alter the behavior of a room entirely. There are currently three special flags: `magic` and `trap`.
 
 **Magic**  
    `magic` is a special flag that alters rooms themselves, and rooms may be given special magical properties or effects, or items in them may be enchanted if possible. Magic may be helpful, harmful, or have no effect what-so-ever. If a room is designated as a `safe_room`, then the effects are constrained to non-harmful effects, which may be none-at-all. Additionally if the `trap` flag is set, then traps may be magica.
