@@ -18,7 +18,8 @@
 #include <stdbool.h>
 #include <unistd.h>
 #include "engine.h"
-#include "players.h"
+#include "mobs/players.h"
+#include "mobs/character.h"
 
 static pid_t child_pid = 0;
 static _Bool turn_based = true;
@@ -29,6 +30,8 @@ enum DungeonEngine_EnErrors DungeonEngine_Init(_Bool turn_based){
      */
     int code = SUCCESS;
     turn_based = turn_based;
+    DungeonEngine_PlayerInit();
+    DungeonEngine_CharacterInit();
     if((code = DungeonEngine_PersonInit()) != SUCCESS){
         return code;
     }
