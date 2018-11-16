@@ -25,7 +25,7 @@ struct DungeonEngine_DungeonTree;
 
 union DungeonEngine_Dungeon {
     struct DungeonEngine_DungeonRoom coords[DE_GENERATION_WIDTH][DE_GENERATION_HEIGHT];
-    struct DungeonEngine_DungeonTree; 
+    struct DungeonEngine_DungeonTree;
 };
 
 struct DungeonEngine_DungeonTree {

@@ -12,6 +12,7 @@
 #define DE_MAX_ROOMS 100
 #define DE_GENERATION_HEIGHT 100 /*Y Values*/
 #define DE_GENERATION_WIDTH  100 /*X Values*/
+#define DE_EXIT_DISTANCE 10 /* Amount of room distance between the Entrance and Exit */
 
 /* Can either be NONE or SQLITE3 */
 #define DE_DATABASE_TYPE SQLITE3
@@ -30,4 +31,6 @@
  ***  YOU KNOW WHAT YOU ARE DOING ***
  ************************************/
 #define DE_COORDINATE_BASED off /*on = the dungeon is 'coordinate-based' ; off = the dungeon is not coordindate-based*/
+#define DE_DISTANCE_TYPE taxicab /* Distance Formula to use for the distance between Entrance and Exit
+                                  * Options: taxicab = use taxicab formula. euclid = use regular distance formula. */
 #endif
